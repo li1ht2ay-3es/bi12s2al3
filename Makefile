@@ -63,7 +63,7 @@ clean:
 define compile-c99
 	@echo "Compiling $<"
 	@mkdir -p $(@D)
-	@cc -Wall -o $@ $<
+	$(CC) -Wall -o $@ $< -lm
 endef
 
 $(AHI22BPP): build/ahi22bpp.c
@@ -72,7 +72,7 @@ $(AHI22BPP): build/ahi22bpp.c
 $(DATADIR)/%.2bpp: $(SRCDIR)/%.ahi $(AHI22BPP)
 	@echo "Converting $<"
 	@mkdir -p $(@D)
-	@$(AHI22BPP) < $< > $@
+	$(AHI22BPP) < $< > $@
 
 $(BG2MAP): build/bg2map.c
 	$(compile-c99)
@@ -80,7 +80,7 @@ $(BG2MAP): build/bg2map.c
 $(DATADIR)/%.map: $(SRCDIR)/%.bg $(BG2MAP)
 	@echo "Converting $<"
 	@mkdir -p $(@D)
-	@$(BG2MAP) < $< > $@
+	$(BG2MAP) < $< > $@
 
 $(SNG2ASM): build/sng2asm.c
 	$(compile-c99)
@@ -88,7 +88,7 @@ $(SNG2ASM): build/sng2asm.c
 $(GENDIR)/%.asm: $(SRCDIR)/%.sng $(SNG2ASM)
 	@echo "Converting $<"
 	@mkdir -p $(@D)
-	@$(SNG2ASM) < $< > $@
+	$(SNG2ASM) < $< > $@
 
 .SECONDARY: $(GENFILES)
 
@@ -97,14 +97,18 @@ $(GENDIR)/%.asm: $(SRCDIR)/%.sng $(SNG2ASM)
 $(ROMFILE): $(OBJFILES)
 	@echo "Linking $@"
 	@mkdir -p $(@D)
-	@rgblink --dmg --sym $(SYMFILE) -o $@ $^
+	rgblink --dmg --sym $(SYMFILE) -o $@ $^
 	@echo "Fixing $@"
-	@rgbfix -v -p 0 $@
+	rgbfix -v -p 0 $@
 
 define compile-asm
 	@echo "Compiling $<"
 	@mkdir -p $(@D)
+<<<<<<< HEAD
 	@rgbasm -Wall -Werror --nop-after-halt -o $@ $<
+=======
+	rgbasm -Wall -Werror -o $@ $<
+>>>>>>> 04fff2b (Create a.yml)
 endef
 
 $(OBJDIR)/mapdata.o: $(SRCDIR)/mapdata.asm $(INCFILES) $(MAPFILES)
